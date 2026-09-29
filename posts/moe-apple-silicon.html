@@ -1,0 +1,90 @@
+<p>
+    The pitch for mixture-of-experts is simple: grow parameter count without growing the per-token compute.
+    A dense 1B model touches every one of its weights on every forward pass. An MoE model with eight experts
+    and top-2 routing has roughly the same FLOP cost as a much smaller dense model, but four times the capacity
+    to memorize.
+</p>
+<p>
+    That tradeoff is normally framed as a win for large clusters. I wanted to know whether it holds on an
+    M2 Max with 64GB of unified memory — where <em>memory bandwidth</em>, not FLOPs, is the binding constraint.
+</p>
+
+<h2>The tokenizer was the first surprise</h2>
+<p>
+    I assumed the tokenizer would be a solved, boring dependency. It was not. Training a 50k-vocab BPE
+    tokenizer over ~570M tokens of FineWeb-edu in pure Python took long enough that I stopped measuring and
+    started rewriting.
+</p>
+<p>
+    The Rust rewrite with <code>PyO3</code> bindings dropped it to a few minutes. The API from Python stays
+    the same:
+</p>
+<pre><code>from edge_moe.tokenizer import BPETokenizer
+
+tok = BPETokenizer.train(
+    corpus="data/fineweb-edu",
+    vocab_size=50_257,
+    num_threads=12,
+)
+tok.save("artifacts/tok-50k.json")</code></pre>
+<p>
+    The lesson generalizes past tokenizers: on constrained hardware, the pieces you assumed were free
+    become the bottleneck, because there is no cluster to hide them behind.
+</p>
+
+<h2>MPS vs MLX</h2>
+<p>
+    The comparison I most wanted was PyTorch's Metal backend against Apple's MLX. They make genuinely
+    different bets — PyTorch-MPS gives you the whole ecosystem at the cost of a translation layer, while
+    MLX is built around unified memory from the start.
+</p>
+<table class="data">
+    <thead>
+        <tr><th>Backend</th><th>Tokens/sec</th><th>Peak memory</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>PyTorch MPS</td><td>~4,100</td><td>21.4 GB</td><td>Full ecosystem, some ops fall back to CPU</td></tr>
+        <tr><td>MLX</td><td>~6,800</td><td>14.9 GB</td><td>Lazy eval, no host/device copies</td></tr>
+    </tbody>
+</table>
+<p>
+    MLX won on both axes, and the memory gap mattered more than the throughput gap — it was the difference
+    between a batch size that fit and one that didn't. But the ecosystem cost is real: every custom kernel
+    and half the training utilities I wanted had to be written by hand.
+</p>
+
+<div class="callout">
+    <strong>If you only take one thing away:</strong> on unified-memory hardware, optimize for memory
+    traffic before you optimize for arithmetic. The GPU is rarely the thing you are waiting on.
+</div>
+
+<h2>Expert specialization actually happens</h2>
+<p>
+    The concern with MoE at small scale is router collapse — every token routes to the same two experts and
+    the remaining capacity is wasted. Measuring the routing distribution per expert across a held-out slice
+    showed genuine specialization emerging by around 40% of the way through training:
+</p>
+<ul>
+    <li>Two experts drifted toward code and markup tokens</li>
+    <li>One took most of the numeric and unit-bearing spans</li>
+    <li>The rest split ordinary prose fairly evenly</li>
+</ul>
+<p>
+    A load-balancing auxiliary loss was still necessary — without it, two experts were effectively dead by
+    step 2,000 — but it needed far less weight than the literature's defaults suggested.
+</p>
+
+<h2>What I'd do differently</h2>
+<ol>
+    <li>Write the tokenizer in Rust from day one instead of porting it under duress.</li>
+    <li>Pick MLX and commit, rather than maintaining two training paths for a comparison I only needed once.</li>
+    <li>Instrument routing entropy from the first step. I added it late and lost the early-training picture.</li>
+</ol>
+
+<hr>
+
+<p>
+    The code is on <a href="https://github.com/egokul71435/edge-moe">GitHub</a>. It is very much a research
+    codebase and not a library — but if you are trying something similar, the benchmark harness and the
+    tokenizer are the parts most worth stealing.
+</p>

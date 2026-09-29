@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gokul elangovan</title>
+    <meta name="description" content="Gokul Elangovan — CS + data science at Rutgers. ML systems, efficient inference, and test-time adaptation.">
+    <meta name="author" content="Gokul Elangovan">
+    <meta property="og:title" content="gokul elangovan">
+    <meta property="og:description" content="CS + data science at Rutgers. ML systems, efficient inference, and test-time adaptation.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232b2b28'/%3E%3Ctext x='50' y='50' font-family='ui-sans-serif,system-ui,sans-serif' font-size='62' font-weight='700' fill='%23c4e538' text-anchor='middle' dominant-baseline='central'%3Ege%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ============ tokens ============
+           One --hue drives the entire palette via OKLCH, so swapping the
+           accent recolors backgrounds, borders and links coherently. */
+        :root {
+            --hue: 70;
+
+            --accent: oklch(0.77 0.185 var(--hue));
+            --accent-hover: oklch(0.83 0.19 calc(var(--hue) + 14));
+            --accent-soft: oklch(0.77 0.185 var(--hue) / 0.14);
+
+            --bg: oklch(0.17 0.004 var(--hue));
+            --card: oklch(0.22 0.005 var(--hue));
+            --card-hover: oklch(0.25 0.005 var(--hue));
+            --fg: oklch(0.985 0.003 var(--hue));
+            --muted: oklch(0.71 0.008 var(--hue));
+            --muted-2: oklch(0.55 0.008 var(--hue));
+            --border: oklch(0.27 0.006 var(--hue));
+
+            --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+            --shell: 896px;
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        [data-theme="light"] {
+            /* accent is darkened here so it stays legible as link text on white */
+            --accent: oklch(0.58 0.17 var(--hue));
+            --accent-hover: oklch(0.5 0.17 calc(var(--hue) + 14));
+            --accent-soft: oklch(0.58 0.17 var(--hue) / 0.12);
+
+            --bg: oklch(0.99 0.002 var(--hue));
+            --card: oklch(0.965 0.003 var(--hue));
+            --card-hover: oklch(0.93 0.004 var(--hue));
+            --fg: oklch(0.21 0.006 var(--hue));
+            --muted: oklch(0.44 0.01 var(--hue));
+            --muted-2: oklch(0.55 0.01 var(--hue));
+            --border: oklch(0.91 0.004 var(--hue));
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            max-width: 100vw;
+            overflow-x: hidden;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        ::selection { background: var(--accent); color: var(--bg); }
+
+        a { color: inherit; text-decoration: none; }
+
+        .shell {
+            max-width: var(--shell);
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ============ header ============ */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            border-bottom: 1px solid var(--border);
+            background: color-mix(in oklab, var(--bg) 72%, transparent);
+            backdrop-filter: blur(12px) saturate(150%);
+            -webkit-backdrop-filter: blur(12px) saturate(150%);
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            height: 64px;
+        }
+
+        .brand {
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            transition: color 0.2s;
+        }
+        .brand:hover { color: var(--accent); }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            list-style: none;
+        }
+
+        .nav-btn {
+            font: inherit;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--muted);
+            background: none;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: color 0.2s, background-color 0.2s;
+        }
+        .nav-btn:hover { color: var(--fg); background: var(--card); }
+        .nav-btn.active { color: var(--accent); background: var(--accent-soft); }
+
+        .nav-tools { display: flex; align-items: center; gap: 6px; }
+
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+        }
+        .icon-btn:hover { color: var(--fg); background: var(--card); border-color: var(--muted-2); }
+        .icon-btn svg { width: 16px; height: 16px; }
+
+        .menu-btn { display: none; }
+
+        /* ============ accent picker ============ */
+        .picker-wrap { position: relative; }
+
+        .picker-dot {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        .picker {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 216px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--card);
+            box-shadow: 0 16px 40px -12px rgb(0 0 0 / 0.45);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-6px) scale(0.97);
+            transform-origin: top right;
+            transition: opacity 0.18s var(--ease), transform 0.18s var(--ease), visibility 0.18s;
+        }
+        .picker.open { opacity: 1; visibility: visible; transform: none; }
+
+        .picker-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted-2);
+            margin-bottom: 10px;
+        }
+
+        .swatches {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .swatch {
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            background: oklch(0.72 0.185 var(--sw));
+            transition: transform 0.15s var(--ease), box-shadow 0.15s;
+        }
+        .swatch:hover { transform: scale(1.14); }
+        .swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--card), 0 0 0 4px oklch(0.72 0.185 var(--sw)); }
+
+        .hue-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 99px;
+            cursor: pointer;
+            background: linear-gradient(90deg,
+                oklch(0.72 0.185 0), oklch(0.72 0.185 60), oklch(0.72 0.185 120),
+                oklch(0.72 0.185 180), oklch(0.72 0.185 240), oklch(0.72 0.185 300),
+                oklch(0.72 0.185 360));
+        }
+        .hue-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            background: var(--fg);
+            border: 2px solid var(--card);
+            box-shadow: 0 1px 4px rgb(0 0 0 / 0.4);
+        }
+        .hue-slider::-moz-range-thumb {
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            background: var(--fg);
+            border: 2px solid var(--card);
+        }
+
+        /* ============ display type ============
+           .grad is split into per-character spans with a weight ramp by JS. */
+        .grad {
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.08;
+        }
+
+        .mask { display: block; overflow: clip; padding-block: 0.15em; margin-block: -0.15em; }
+        .rise {
+            display: block;
+            transform-origin: 0 100%;
+            animation: rise 0.75s var(--ease) both;
+            animation-delay: calc(var(--row, 0) * 0.11s);
+        }
+        @keyframes rise {
+            from { transform: translateY(140%) rotate(4deg); }
+            to { transform: none; }
+        }
+
+        /* scroll-driven reveal where supported; JS adds .in as fallback */
+        .reveal { opacity: 0; translate: 0 1.25rem; transition: opacity 0.5s var(--ease), translate 0.5s var(--ease); }
+        .reveal.in { opacity: 1; translate: none; }
+        @supports (animation-timeline: view()) {
+            .reveal {
+                opacity: 1; translate: none;
+                animation: reveal-up linear both;
+                animation-timeline: view();
+                animation-range: entry 0 entry 42%;
+            }
+        }
+        @keyframes reveal-up {
+            from { opacity: 0; translate: 0 1.25rem; }
+            to { opacity: 1; translate: none; }
+        }
+
+        /* ============ pages ============ */
+        main { padding: 8px 0 72px; }
+
+        .page { display: none; }
+        .page.active { display: block; animation: page-in 0.4s var(--ease) both; }
+        @keyframes page-in {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: none; }
+        }
+
+        .hero { padding: 56px 0 40px; }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 200px;
+            gap: 44px;
+            align-items: start;
+        }
+
+        h1.grad { font-size: clamp(2.5rem, 7vw, 3.75rem); }
+
+        .lede {
+            margin-top: 22px;
+            font-size: 1.0625rem;
+            color: var(--muted);
+            line-height: 1.75;
+        }
+        .lede + .lede { margin-top: 14px; }
+
+        .lede a, .prose a {
+            color: var(--accent);
+            font-weight: 500;
+            text-decoration: underline;
+            text-decoration-color: var(--accent-soft);
+            text-decoration-thickness: 1.5px;
+            text-underline-offset: 3px;
+            transition: color 0.2s, text-decoration-color 0.2s;
+        }
+        .lede a:hover, .prose a:hover {
+            color: var(--accent-hover);
+            text-decoration-color: currentColor;
+        }
+
+        /* click-to-copy email chip, sized to sit level with the social icons */
+        .mono-contact {
+            display: inline-flex;
+            align-items: center;
+            height: 34px;
+            margin-left: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.8125rem;
+            color: var(--muted-2);
+            padding: 0 12px;
+            border: 1px solid var(--border);
+            border-radius: 99px;
+            background: var(--card);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+        }
+        .mono-contact:hover { color: var(--fg); border-color: var(--muted-2); }
+        .mono-contact.copied { color: var(--accent); border-color: var(--accent); }
+
+        .portrait { position: relative; }
+        .portrait img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            display: block;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            transition: border-color 0.3s, transform 0.4s var(--ease);
+        }
+        .portrait:hover img { border-color: var(--accent); transform: translateY(-3px); }
+        .portrait figcaption {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 0.8125rem;
+            color: var(--muted-2);
+        }
+
+        .socials { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 26px; }
+        .socials .icon-btn { border-radius: 50%; }
+        .socials .icon-btn:hover { color: var(--accent); border-color: var(--accent); }
+        .socials svg { fill: currentColor; }
+
+        .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font: inherit;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 11px 18px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.2s var(--ease);
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-primary { background: var(--accent); color: var(--bg); font-weight: 600; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        /* dark backdrop in both themes, lightening on hover */
+        .btn-ghost {
+            background: oklch(0.17 0.006 var(--hue));
+            border-color: oklch(0.32 0.008 var(--hue));
+            color: oklch(0.97 0.003 var(--hue));
+        }
+        .btn-ghost:hover {
+            background: oklch(0.27 0.01 var(--hue));
+            border-color: color-mix(in oklab, var(--accent) 50%, oklch(0.32 0.008 var(--hue)));
+        }
+
+        /* ============ sections ============ */
+        section { padding: 40px 0; }
+
+        .page > h1.grad {
+            font-size: clamp(2rem, 5.5vw, 2.75rem);
+            padding: 48px 0 8px;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        h2.grad { font-size: 1.5rem; }
+
+        .section-kicker {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--muted-2);
+        }
+
+        .prose { color: var(--muted); line-height: 1.8; }
+        .prose + .prose { margin-top: 16px; }
+        .prose strong { color: var(--fg); font-weight: 600; }
+
+        /* ============ cards ============ */
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--card);
+            padding: 22px 24px;
+            transition: border-color 0.25s, background-color 0.25s, transform 0.25s var(--ease);
+        }
+        .card + .card { margin-top: 16px; }
+        .card:hover {
+            border-color: color-mix(in oklab, var(--accent) 55%, var(--border));
+            background: var(--card-hover);
+            transform: translateY(-2px);
+        }
+
+        .card-top {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 4px 16px;
+        }
+
+        .card-title {
+            font-size: 1.0625rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            transition: color 0.2s;
+        }
+        .card:hover .card-title { color: var(--accent); }
+
+        .card-meta {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--muted-2);
+            white-space: nowrap;
+        }
+
+        .card-body { margin-top: 12px; color: var(--muted); line-height: 1.72; font-size: 0.9375rem; }
+
+        .card-body ul { list-style: none; }
+        .card-body li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 6px;
+        }
+        .card-body li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.72em;
+            width: 7px;
+            height: 1.5px;
+            border-radius: 2px;
+            background: var(--accent);
+            opacity: 0.7;
+        }
+
+        .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+
+        .tag {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--muted);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 3px 10px;
+            border-radius: 99px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .card:hover .tag { border-color: color-mix(in oklab, var(--accent) 30%, var(--border)); }
+        .tag a { color: var(--accent); font-weight: 500; }
+        .tag:has(a):hover { border-color: var(--accent); }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .card-grid .card + .card { margin-top: 0; }
+
+        /* skills: labelled rows rather than one undifferentiated cloud */
+        .skill-group {
+            display: grid;
+            grid-template-columns: 136px 1fr;
+            gap: 8px 20px;
+            align-items: start;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .skill-group:first-child { padding-top: 0; }
+        .skill-group:last-child { border-bottom: none; padding-bottom: 0; }
+
+        .skill-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--muted-2);
+            padding-top: 5px;
+        }
+
+        .skill-items { display: flex; flex-wrap: wrap; gap: 7px; }
+        .skill-items .tag { font-size: 0.8125rem; padding: 4px 11px; background: var(--card); }
+        .skill-items .tag:hover { border-color: var(--accent); color: var(--fg); }
+
+        @media (max-width: 560px) {
+            .skill-group { grid-template-columns: 1fr; gap: 10px; }
+            .skill-label { padding-top: 0; }
+        }
+
+        /* blog */
+        .post {
+            display: block;
+            padding: 22px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .post:last-child { border-bottom: none; }
+        .post-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--muted-2);
+        }
+        .post-title {
+            margin-top: 8px;
+            font-size: 1.1875rem;
+            font-weight: 600;
+            letter-spacing: -0.015em;
+            transition: color 0.2s;
+        }
+        .post:hover .post-title { color: var(--accent); }
+        .post-excerpt { margin-top: 8px; color: var(--muted); font-size: 0.9375rem; line-height: 1.72; }
+
+        .badge {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-soft);
+            padding: 2px 8px;
+            border-radius: 99px;
+        }
+
+        /* ============ article ============ */
+        .progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 2px;
+            width: 100%;
+            transform-origin: 0 50%;
+            background: var(--accent);
+            z-index: 60;
+            scale: 0 1;
+        }
+        @supports (animation-timeline: scroll(root)) {
+            .progress {
+                animation: grow linear both;
+                animation-timeline: scroll(root);
+            }
+        }
+        @keyframes grow { from { scale: 0 1; } to { scale: 1 1; } }
+        body:not([data-reading]) .progress { display: none; }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 40px 0 0;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--muted);
+            background: none;
+            border: none;
+            font-family: inherit;
+            cursor: pointer;
+            transition: color 0.2s, gap 0.2s var(--ease);
+        }
+        .back-link:hover { color: var(--accent); gap: 10px; }
+
+        .article { max-width: 680px; }
+
+        .article-head { padding: 20px 0 8px; border-bottom: 1px solid var(--border); margin-bottom: 36px; }
+        .article-head h1 {
+            font-size: clamp(1.9rem, 4.6vw, 2.6rem);
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin: 14px 0 18px;
+        }
+        .article-dek { color: var(--muted); font-size: 1.0625rem; line-height: 1.7; margin-bottom: 22px; }
+
+        .article-body { color: var(--muted); font-size: 1.0125rem; line-height: 1.8; }
+        .article-body > * + * { margin-top: 22px; }
+        .article-body h2 {
+            color: var(--fg);
+            font-size: 1.3rem;
+            font-weight: 650;
+            letter-spacing: -0.02em;
+            margin-top: 44px;
+            scroll-margin-top: 84px;
+        }
+        .article-body h3 {
+            color: var(--fg);
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-top: 32px;
+        }
+        .article-body strong { color: var(--fg); font-weight: 600; }
+        .article-body ul, .article-body ol { padding-left: 4px; list-style: none; }
+        .article-body li { position: relative; padding-left: 22px; margin-bottom: 8px; }
+        .article-body ul li::before {
+            content: '';
+            position: absolute;
+            left: 2px; top: 0.78em;
+            width: 8px; height: 1.5px;
+            border-radius: 2px;
+            background: var(--accent);
+            opacity: 0.75;
+        }
+        .article-body ol { counter-reset: n; }
+        .article-body ol li { counter-increment: n; }
+        .article-body ol li::before {
+            content: counter(n) '.';
+            position: absolute;
+            left: 0;
+            font-family: var(--font-mono);
+            font-size: 0.8em;
+            color: var(--accent);
+        }
+
+        .article-body code {
+            font-family: var(--font-mono);
+            font-size: 0.86em;
+            color: var(--fg);
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 1px 5px;
+            border-radius: 5px;
+        }
+        .article-body pre {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 18px;
+            overflow-x: auto;
+            font-size: 0.8125rem;
+            line-height: 1.7;
+        }
+        .article-body pre code { background: none; border: none; padding: 0; color: var(--muted); }
+
+        .article-body blockquote {
+            border-left: 2px solid var(--accent);
+            padding: 2px 0 2px 18px;
+            color: var(--fg);
+            font-size: 1.05rem;
+        }
+
+        .article-body hr { border: none; border-top: 1px solid var(--border); margin: 44px 0; }
+
+        .callout {
+            border: 1px solid var(--border);
+            border-left: 2px solid var(--accent);
+            background: var(--card);
+            border-radius: 0 12px 12px 0;
+            padding: 16px 18px;
+            font-size: 0.9375rem;
+        }
+
+        table.data {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            font-variant-numeric: tabular-nums;
+        }
+        table.data th, table.data td {
+            text-align: left;
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        table.data th {
+            color: var(--muted-2);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 500;
+        }
+        table.data td:first-child { color: var(--fg); font-weight: 500; }
+        table.data tbody tr:last-child td { border-bottom: none; }
+
+        .article-foot {
+            margin-top: 52px;
+            padding-top: 28px;
+            padding-bottom: 56px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        /* ============ footer ============ */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 28px 0 40px;
+        }
+        .footer-inner {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 0.8125rem;
+            color: var(--muted-2);
+        }
+        .footer-inner a:hover { color: var(--accent); }
+
+        /* ============ responsive ============ */
+        @media (max-width: 760px) {
+            .nav-links {
+                position: absolute;
+                top: 64px;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 2px;
+                padding: 10px 24px 16px;
+                background: var(--bg);
+                border-bottom: 1px solid var(--border);
+                display: none;
+            }
+            .nav-links.open { display: flex; animation: page-in 0.25s var(--ease) both; }
+            .nav-btn { text-align: left; padding: 11px 12px; }
+            .menu-btn { display: inline-flex; }
+
+            .hero { padding: 36px 0 24px; }
+            .hero-grid { grid-template-columns: 1fr; gap: 28px; }
+            .portrait { max-width: 168px; }
+            .portrait figcaption { text-align: left; }
+            .shell { padding: 0 20px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .reveal { opacity: 1; translate: none; }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="shell">
+            <nav>
+                <a class="brand" href="#" data-page="about">gokul elangovan</a>
+
+                <ul class="nav-links" id="navLinks">
+                    <li><button class="nav-btn active" data-page="about">About</button></li>
+                    <li><button class="nav-btn" data-page="experience">Experience</button></li>
+                    <li><button class="nav-btn" data-page="projects">Projects</button></li>
+                    <li><button class="nav-btn" data-page="blog">Blog</button></li>
+                </ul>
+
+                <div class="nav-tools">
+                    <div class="picker-wrap">
+                        <button class="icon-btn" id="pickerBtn" aria-label="Change accent color" aria-expanded="false">
+                            <span class="picker-dot"></span>
+                        </button>
+                        <div class="picker" id="picker">
+                            <div class="picker-label">Accent</div>
+                            <div class="swatches" id="swatches"></div>
+                            <input class="hue-slider" id="hueSlider" type="range" min="0" max="360" step="1" aria-label="Accent hue">
+                        </div>
+                    </div>
+
+                    <button class="icon-btn" id="themeToggle" aria-label="Toggle color theme">
+                        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></svg>
+                    </button>
+
+                    <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="shell">
+        <!-- ==================== ABOUT ==================== -->
+        <div id="about" class="page active">
+            <div class="hero">
+                <div class="hero-grid">
+                    <div>
+                        <h1 class="grad" data-grad-rows="2" aria-label="Hey, I'm Gokul Elangovan">Hey, I'm|Gokul Elangovan</h1>
+
+                        <p class="lede">
+                            I'm studying computer science and data science at <a href="https://www.rutgers.edu/">Rutgers University</a> and will be graduating in January 2027.
+                            This summer I interned at <a href="https://www.wayfair.com/">Wayfair</a> as a software engineer intern, building an internal platform called Wayfair Intelligence System (WINS).
+                            I'm also a Tech Fellow at <a href="https://codepath.org/">CodePath</a>, where I help teach AI110, a course on AI engineering, to 600+ college students.
+                        </p>
+                        <p class="lede">
+                            I'm primarily interested in the design, infrastructure, and learning patterns of efficient ML systems. Right now I'm validating a meta-learned gating system for out-of-distribution vision tasks.
+                        </p>
+
+                        <div class="cta-row">
+                            <button class="btn btn-primary" data-page="experience">Experience</button>
+                            <button class="btn btn-primary" data-page="projects">View projects</button>
+                            <button class="btn btn-ghost" data-page="blog">Read the blog</button>
+                            <a class="btn btn-ghost" href="gokul-elangovan-resume.pdf" target="_blank" rel="noopener noreferrer">Résumé ↗</a>
+                        </div>
+
+                        <div class="socials">
+                            <a class="icon-btn" href="https://github.com/egokul71435" aria-label="GitHub" target="_blank" rel="noopener noreferrer">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.92.58.11.79-.25.79-.56v-2.02c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.33.95.1-.74.4-1.25.72-1.54-2.56-.29-5.25-1.28-5.25-5.71 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18a10.8 10.8 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.12 3.04.74.81 1.18 1.84 1.18 3.1 0 4.45-2.69 5.42-5.26 5.7.41.35.77 1.04.77 2.1v3.11c0 .31.21.68.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>
+                            </a>
+                            <a class="icon-btn" href="https://www.linkedin.com/in/gokulelangovan/" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="4" cy="4" r="2"/><rect x="2" y="9" width="4" height="12"/><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/></svg>
+                            </a>
+                            <a class="icon-btn" href="mailto:gokul.elangovan@rutgers.edu" aria-label="Email">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4.2-8 5.33L4 8.2V6.8l8 5.33 8-5.33Z"/></svg>
+                            </a>
+                            <button class="mono-contact" id="copyEmail" data-email="gokul.elangovan@rutgers.edu"
+                                    title="Copy email address">gokul [dot] elangovan [at] rutgers [dot] edu</button>
+                        </div>
+                    </div>
+
+                    <figure class="portrait">
+                        <img src="pfp.jpg" alt="Gokul Elangovan">
+                        <figcaption>@ the white house</figcaption>
+                    </figure>
+                </div>
+            </div>
+
+            <section>
+                <div class="section-head">
+                    <h2 class="grad">What I'm working on</h2>
+                    <span class="section-kicker">now</span>
+                </div>
+
+                <!-- <div class="card reveal">
+                    <div class="card-top">
+                        <div class="card-title">Wayfair Intelligence System (WINS)</div>
+                        <div class="card-meta">Wayfair · Summer 2026</div>
+                    </div>
+                    <div class="card-body">
+                        An LLM-powered system for supplier and physical retail performance insights. It uses
+                        <strong>gemini-2.5-pro</strong> to generate reports and answer questions over portfolio data, deployed on Kubernetes.
+                        I contributed to the platform's visual user experience, LLM latency / cost efficiency / response quality,
+                        and the backend orchestration that saves and serves reports.
+                    </div>
+                    <div class="tags">
+                        <span class="tag">gemini-2.5-pro</span>
+                        <span class="tag">RAG</span>
+                        <span class="tag">Flask</span>
+                        <span class="tag">Kubernetes</span>
+                    </div>
+                </div> -->
+
+                <div class="card reveal">
+                    <div class="card-top">
+                        <div class="card-title">VLM-TTA-Gating</div>
+                        <div class="card-meta">research · in progress</div>
+                    </div>
+                    <div class="card-body">
+                        A framework for task-aware gating in vision-language models. Both Test-time Prompt Tuning (TPT) and
+                        Training-Free Dynamic Adapters (TDA) improve test-time adaptation, but on
+                        <a href="https://github.com/fastai/imagenette">Imagewoof</a> they disagree on a sizable number of examples.
+                        Gradient boosting over that disagreement reached <strong>60.7% average LOO</strong>, beating a
+                        <strong>55.7% majority baseline</strong>. Next steps include testing other gate architectures and scaling.
+                        <div class="tags">
+                            <span class="tag"><a href="https://github.com/egokul71435/vlm-tta-gating">github ↗</a></span>
+                            <span class="tag">CLIP</span>
+                            <span class="tag">PyTorch</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card reveal">
+                    <div class="card-top">
+                        <div class="card-title">edge-moe</div>
+                        <div class="card-meta">project · in progress</div>
+                    </div>
+                    <div class="card-body">
+                        A mixture-of-experts language model optimized for Apple Silicon, a transformer from scratch with a
+                        Rust-based tokenizer, PyTorch-MPS/MLX training, and inference optimization. The aim is to benchmark MoE
+                        models on edge devices and show you don't need massive GPUs for decent model performance, just good systems design.
+                        <div class="tags">
+                            <span class="tag"><a href="https://github.com/egokul71435/edge-moe">github ↗</a></span>
+                            <span class="tag">Rust</span>
+                            <span class="tag">MLX</span>
+                            <span class="tag">MoE</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== EXPERIENCE ==================== -->
+        <div id="experience" class="page">
+            <h1 class="grad">Experience</h1>
+
+            <section>
+                <div class="card reveal">
+                    <div class="card-top">
+                        <div class="card-title">Software Engineer Intern @ Wayfair</div>
+                        <div class="card-meta">Boston, MA · Jun–Aug 2026</div>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li>Worked on Wayfair Intelligence System (WINS), an internal product for supplier performance analysis</li>
+                            <li>Designed and implemented WINS interface, adding resizable chat window and other thematic features</li>
+                            <li>Built an LLM harness to log performance metrics for gemini-2.5-pro including token usage, latency, and cost</li>
+                            <li>Architected an LLM usage table in BigQuery to log user queries and LLM responses for performance analysis</li>
+                            <li>Identified and resolved chat pipeline inefficiencies and redundancies, reducing token usage and cost by 55%</li>
+                            <li>Shipped LRU &amp; TTL report caching, saving ~$0.70 and ~70 seconds per repeated report request</li>
+                            <li>Built saved-reports functionality using GCS bucket storage, BigQuery for listing/search, and a Flask REST API</li>
+                            <li>Prototyped question-aware context slicing with RAG, reducing average chat call cost from $0.54 to $0.02</li>
+                        </ul>
+                    </div>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Flask</span>
+                        <span class="tag">SQL</span>
+                        <span class="tag">Google Cloud Storage</span>
+                        <span class="tag">BigQuery</span>
+                        <span class="tag">Docker</span>
+                        <span class="tag">Kubernetes</span>
+                        <span class="tag">Caching</span>
+                        <span class="tag">gemini-2.5-pro</span>
+                        <span class="tag">text-embedding-004</span>
+                        <span class="tag">RAG</span>
+                    </div>
+                </div>
+
+                <div class="card reveal">
+                    <div class="card-top">
+                        <div class="card-title">Undergraduate Researcher @ Rutgers University</div>
+                        <div class="card-meta">New Brunswick, NJ · Jun 2025–Present</div>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li>Currently working on developing a CLIP test-time adaptation pipeline (TPT/TDA) to improve VLM performance</li>
+                            <li>Built a pipeline benchmarking TPT and TDA for CLIP under synthetic domain shift on 1,000 corrupted images</li>
+                            <li>Showed that a per-image strategy router has ~6 points of headroom (69.8% oracle vs. 64.0% for the best fixed strategy), stable across a 6.7x scale-up of the dataset, justifying the development of a gate</li>
+                            <li>Trained gating models (gradient boosting on uncertainty features; MLP on PCA-compressed CLIP embeddings) that beat always-TPT selection by ~4–5 points on images where the strategies disagree</li>
+                            <li>Evaluated RL-based (REINFORCE) routing, diagnosed majority-class collapse and overfitting in embedding-based gates, and identified a 12x compute gap between methods, motivating a cost-aware gate</li>
+                            <li>Earlier in the role, benchmarked negation accuracy of 3 GenAI vision-language models on H100 GPU clusters using PyTorch (CUDA), on a filtered subset of a 225k+ image medical dataset, to test retrieval and MCQ tasks</li>
+                        </ul>
+                    </div>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">H100</span>
+                        <span class="tag">PyTorch</span>
+                        <span class="tag">Hugging Face</span>
+                        <span class="tag">scikit-learn</span>
+                        <span class="tag">CUDA</span>
+                        <span class="tag">MPS</span>
+                        <span class="tag">VLMs</span>
+                        <span class="tag">CLIP</span>
+                    </div>
+                </div>
+
+                <div class="card reveal">
+                    <div class="card-top">
+                        <div class="card-title">Data Science Intern @ Transatlantic Reinsurance</div>
+                        <div class="card-meta">New York, NY · Jun–Aug 2025</div>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li>Worked on diagnosing and resolving data quality issues involving California wildfires and subsequent analysis</li>
+                            <li>Developed a high throughput ETL pipeline to process 1,000+ wildfire records spanning over 20 years</li>
+                            <li>Corroborated the quality of internal data sources by automating 20+ Excel dashboards for comparison</li>
+                            <li>Identified 6 wildfire trends using data science and machine learning techniques (including, but not limited to regression and clustering), identified widening in wildfire occurrence window, among other trends</li>
+                        </ul>
+                    </div>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Pandas</span>
+                        <span class="tag">NumPy</span>
+                        <span class="tag">Matplotlib</span>
+                        <span class="tag">scikit-learn</span>
+                        <span class="tag">PDFPlumber</span>
+                        <span class="tag">ETL</span>
+                        <span class="tag">Web Scraping</span>
+                    </div>
+                </div>
+
+                <div class="card reveal">
+                    <div class="card-top">
+                        <div class="card-title">Tech Fellow @ CodePath</div>
+                        <div class="card-meta">Remote · Jul 2024–Present</div>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li>Instructed 600+ students across 3 cohorts in AI110, a course on AI engineering, covering tool usage and project development with Claude Code across topics including but not limited to UML Design and RAG</li>
+                            <li>Instructed 1,000+ students across 5 cohorts in TIP101, a course on technical interview preparation, covering data structures and algorithms concepts in Python as well as software engineering principles</li>
+                        </ul>
+                    </div>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Claude Code</span>
+                        <span class="tag">RAG</span>
+                        <span class="tag">Data Structures</span>
+                        <span class="tag">Algorithms</span>
+                    </div>
+                </div>
+
+                <div class="card reveal">
+                    <div class="card-top">
+                        <div class="card-title">Tech Director, Tech Chair @ USACS (Rutgers)</div>
+                        <div class="card-meta">New Brunswick, NJ · Jan 2025–May 2026</div>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li>Directed a 12-hour hackathon in Spring 2026, UHACCS, doing so for the first time in 3 years, hosting 150+ participants, featuring partnerships and collaborations with Microsoft, Figma, and more</li>
+                            <li>As Tech Director, led the technical vision and strategy for USACS, designing and delivering 6 events per semester to 30+ students on technical topics like LLMs, React, and also project and resume roasts</li>
+                            <li>As Tech Chair, organized and led a few technical workshops, including sessions on local LLM inference</li>
+                        </ul>
+                    </div>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">React</span>
+                        <span class="tag">LLMs</span>
+                        <span class="tag">RAG</span>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="section-head">
+                    <h2 class="grad">Skills</h2>
+                </div>
+                <!-- Mirrors the skills block on the resume, plus ML/LLM rows
+                     the resume folds into "Libraries". Keep the two in sync. -->
+                <div class="reveal">
+                    <div class="skill-group">
+                        <div class="skill-label">Languages</div>
+                        <div class="skill-items">
+                            <span class="tag">Python</span>
+                            <span class="tag">SQL</span>
+                            <span class="tag">Java</span>
+                            <span class="tag">C</span>
+                            <span class="tag">Rust</span>
+                            <span class="tag">JavaScript</span>
+                        </div>
+                    </div>
+
+                    <div class="skill-group">
+                        <div class="skill-label">ML &amp; research</div>
+                        <div class="skill-items">
+                            <span class="tag">PyTorch</span>
+                            <span class="tag">CUDA</span>
+                            <span class="tag">MPS</span>
+                            <span class="tag">MLX</span>
+                            <span class="tag">HF Transformers</span>
+                            <span class="tag">scikit-learn</span>
+                            <span class="tag">NumPy</span>
+                            <span class="tag">Pandas</span>
+                            <span class="tag">Matplotlib</span>
+                            <span class="tag">CLIP</span>
+                            <span class="tag">VLMs</span>
+                        </div>
+                    </div>
+
+                    <div class="skill-group">
+                        <div class="skill-label">LLM systems</div>
+                        <div class="skill-items">
+                            <span class="tag">RAG</span>
+                            <span class="tag">Vertex AI</span>
+                            <span class="tag">gemini-2.5-pro</span>
+                            <span class="tag">text-embedding-004</span>
+                            <span class="tag">Prompt optimization</span>
+                            <span class="tag">Evaluation harnesses</span>
+                        </div>
+                    </div>
+
+                    <div class="skill-group">
+                        <div class="skill-label">Backend &amp; web</div>
+                        <div class="skill-items">
+                            <span class="tag">Flask</span>
+                            <span class="tag">FastAPI</span>
+                            <span class="tag">React</span>
+                            <span class="tag">ETL</span>
+                            <span class="tag">Web scraping</span>
+                            <span class="tag">PDFPlumber</span>
+                            <span class="tag">Caching</span>
+                        </div>
+                    </div>
+
+                    <div class="skill-group">
+                        <div class="skill-label">Databases</div>
+                        <div class="skill-items">
+                            <span class="tag">PostgreSQL</span>
+                            <span class="tag">SQLite</span>
+                            <span class="tag">MongoDB</span>
+                            <span class="tag">BigQuery</span>
+                            <span class="tag">Google Cloud Storage</span>
+                        </div>
+                    </div>
+
+                    <div class="skill-group">
+                        <div class="skill-label">Tools</div>
+                        <div class="skill-items">
+                            <span class="tag">Git</span>
+                            <span class="tag">GitHub</span>
+                            <span class="tag">Docker</span>
+                            <span class="tag">Kubernetes</span>
+                            <span class="tag">GCP</span>
+                            <span class="tag">Claude Code</span>
+                            <span class="tag">Linux/Ubuntu</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== PROJECTS + RESEARCH ==================== -->
+        <div id="projects" class="page">
+            <h1 class="grad">Projects + Research</h1>
+
+            <section>
+                <div class="section-head">
+                    <h2 class="grad">Research</h2>
+                    <span class="section-kicker">02</span>
+                </div>
+
+                <div class="card-grid">
+
+                    <div class="card reveal">
+                        <div class="card-top">
+                            <div class="card-title">Test-Time Adaptation Gating for Vision-Language Models</div>
+                        </div>
+                        <div class="card-meta" style="margin-top:6px">Rutgers · In Progress</div>
+                        <div class="card-body">
+                            Developing a task-aware gating system for test-time adaptation of vision-language models. Benchmarked
+                            Test-time Prompt Tuning (TPT) and Training-Free Dynamic Adapters (TDA) on Imagewoof, showing a 6-point
+                            headroom for per-image strategy selection. Implemented gradient boosting and MLP gates to improve
+                            performance on examples where TPT and TDA disagree.
+                        </div>
+                        <div class="tags">
+                            <span class="tag">VLMs</span>
+                            <span class="tag">TPT</span>
+                            <span class="tag">TDA</span>
+                            <span class="tag">Gating</span>
+                            <span class="tag">PyTorch</span>
+                            <span class="tag">MPS</span>
+                            <span class="tag">CLIP</span>
+                        </div>
+                    </div>
+
+                    <div class="card reveal">
+                        <div class="card-top">
+                            <div class="card-title">Vision-Language Model Benchmarking on H100 Clusters</div>
+                        </div>
+                        <div class="card-meta" style="margin-top:6px">Rutgers · Closed</div>
+                        <div class="card-body">
+                            Benchmarked negation accuracy of 3 GenAI vision-language models on H100 GPU clusters using PyTorch
+                            (CUDA), on a filtered subset of a 225k+ image medical dataset, to test negation retrieval and MCQ performance. 
+                            This project is now closed, as I've pivoted to test-time adaptation research on VLMs.
+                        </div>
+                        <div class="tags">
+                            <span class="tag">VLMs</span>
+                            <span class="tag">H100</span>
+                            <span class="tag">PyTorch</span>
+                            <span class="tag">CUDA</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="section-head">
+                    <h2 class="grad">Projects</h2>
+                    <span class="section-kicker">02</span>
+                </div>
+
+                <div class="card-grid">
+                    <div class="card reveal">
+                        <div class="card-top">
+                            <div class="card-title">edge-moe: MoE Language Models on Apple Silicon</div>
+                        </div>
+                        <div class="card-meta" style="margin-top:6px">In progress</div>
+                        <div class="card-body">
+                            A custom mixture-of-experts decoder-only transformer in PyTorch, optimized for M-series Macs.
+                            Top-k expert routing with loss-free load balancing to keep compute units utilized and cut inference
+                            latency across experts. GQA and RoPE reduce KV-cache memory bandwidth; weight tying across the token
+                            embeddings and output projection shrinks the memory footprint and parameter count. Fed by a custom
+                            Rust BPE tokenizer (50k vocab, ~570M tokens of FineWeb-edu) with PyO3 bindings, and benchmarked
+                            across PyTorch MPS vs MLX backends.
+                        </div>
+                        <div class="tags">
+                            <span class="tag"><a href="https://github.com/egokul71435/edge-moe">github ↗</a></span>
+                            <span class="tag">PyTorch MPS</span>
+                            <span class="tag">MLX</span>
+                            <span class="tag">Rust</span>
+                            <span class="tag">PyO3</span>
+                            <span class="tag">MoE</span>
+                            <span class="tag">GQA</span>
+                            <span class="tag">RoPE</span>
+                        </div>
+                    </div>
+
+                    <div class="card reveal">
+                        <div class="card-top">
+                            <div class="card-title">Chain-of-Thought Knowledge Distillation</div>
+                        </div>
+                        <div class="card-meta" style="margin-top:6px">Completed</div>
+                        <div class="card-body">
+                            A CoT distillation pipeline in PyTorch doing both sequence- and logit-level KD, with cross-tokenizer
+                            alignment via character-offset tracking, distilling 70B+ parameter teachers (Llama 3.3, GPT-OSS) into
+                            a Llama 3.2 3B student. The interesting result was a correctness-vs-style tradeoff between the two
+                            objectives: logit KD beat the baseline by 29% on task performance, while sequence KD
+                            gave the closest teacher replication at a 0.9693 BERTScore F1 across SciBench and TheoremQA.
+                        </div>
+                        <div class="tags">
+                            <span class="tag"><a href="https://github.com/egokul71435/deep_learning_distillation">github ↗</a></span>
+                            <span class="tag">PyTorch</span>
+                            <span class="tag">Knowledge Distillation</span>
+                            <span class="tag">CoT</span>
+                            <span class="tag">Llama 3.3 / 3.2</span>
+                            <span class="tag">GPT-OSS</span>
+                            <span class="tag">BERTScore</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== BLOG ====================
+             Posts live in posts/. Add one by dropping an HTML fragment in that
+             folder and adding an entry to posts/posts.json — nothing here changes. -->
+        <div id="blog" class="page">
+            <h1 class="grad">Blog</h1>
+
+            <section>
+                <p class="prose" style="margin-bottom:8px">
+                    Technical writing on ML systems, edge deployment, and research insights.
+                </p>
+                <div id="postList"></div>
+            </section>
+        </div>
+
+        <!-- Article shell: filled from posts/<slug>.html on navigation -->
+        <div id="post" class="page">
+            <button class="back-link" data-page="blog">← All posts</button>
+            <article class="article">
+                <header class="article-head">
+                    <div class="post-meta" id="postMeta"></div>
+                    <h1 id="postTitle"></h1>
+                    <p class="article-dek" id="postDek"></p>
+                    <div class="tags" id="postTags"></div>
+                </header>
+                <div class="article-body" id="postBody"></div>
+                <div class="article-foot">
+                    <button class="back-link" style="margin:0" data-page="blog">← All posts</button>
+                    <a class="btn btn-ghost" id="postLink" target="_blank" rel="noopener noreferrer"></a>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <div class="progress" aria-hidden="true"></div>
+
+    <footer>
+        <div class="shell footer-inner">
+            <span>© 2026 gokul elangovan</span>
+            <span>Built with HTML, CSS, and vanilla JS · <a href="https://github.com/egokul71435" target="_blank" rel="noopener noreferrer">github</a></span>
+        </div>
+    </footer>
+
+    <script>
+    (() => {
+        const root = document.documentElement;
+        const store = {
+            get(k, fallback) { try { return localStorage.getItem(k) ?? fallback; } catch { return fallback; } },
+            set(k, v) { try { localStorage.setItem(k, v); } catch {} }
+        };
+
+        /* ---------- theme ---------- */
+        const SUN = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
+        const MOON = '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>';
+        const themeIcon = document.getElementById('themeIcon');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            themeIcon.innerHTML = t === 'dark' ? SUN : MOON;
+        }
+        const prefersDark = !window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(store.get('theme', prefersDark ? 'dark' : 'light'));
+
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            store.set('theme', next);
+        });
+
+        /* ---------- accent hue ---------- */
+        const PRESETS = [
+            { name: 'Lime',   hue: 70  },
+            { name: 'Green',  hue: 150 },
+            { name: 'Teal',   hue: 195 },
+            { name: 'Blue',   hue: 255 },
+            { name: 'Violet', hue: 300 },
+            { name: 'Rose',   hue: 15  }
+        ];
+        const swatches = document.getElementById('swatches');
+        const slider = document.getElementById('hueSlider');
+
+        function applyHue(h, persist = true) {
+            root.style.setProperty('--hue', h);
+            slider.value = h;
+            swatches.querySelectorAll('.swatch').forEach(b =>
+                b.setAttribute('aria-pressed', String(Number(b.dataset.hue) === Number(h))));
+            if (persist) store.set('hue', h);
+        }
+
+        PRESETS.forEach(p => {
+            const b = document.createElement('button');
+            b.className = 'swatch';
+            b.dataset.hue = p.hue;
+            b.style.setProperty('--sw', p.hue);
+            b.title = p.name;
+            b.setAttribute('aria-label', p.name + ' accent');
+            b.addEventListener('click', () => applyHue(p.hue));
+            swatches.appendChild(b);
+        });
+
+        slider.addEventListener('input', e => applyHue(e.target.value));
+        applyHue(Number(store.get('hue', 70)));
+
+        const pickerBtn = document.getElementById('pickerBtn');
+        const picker = document.getElementById('picker');
+        pickerBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            const open = picker.classList.toggle('open');
+            pickerBtn.setAttribute('aria-expanded', String(open));
+        });
+        picker.addEventListener('click', e => e.stopPropagation());
+        document.addEventListener('click', () => {
+            picker.classList.remove('open');
+            pickerBtn.setAttribute('aria-expanded', 'false');
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                picker.classList.remove('open');
+                pickerBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        /* ---------- display headings: per-character weight ramp ----------
+           Splits .grad text into spans interpolating 800 -> 300. A "|" in the
+           source marks a line break, and each line rises in on load. */
+        document.querySelectorAll('.grad').forEach(el => {
+            const raw = el.textContent.trim();
+            if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', raw.replace(/\|/g, ' '));
+
+            const lines = raw.split('|');
+            const total = raw.replace(/\|/g, '').length;
+            const animate = lines.length > 1;
+            let i = 0;
+            el.textContent = '';
+
+            lines.forEach((line, row) => {
+                const build = () => {
+                    const frag = document.createDocumentFragment();
+                    for (const ch of line) {
+                        const s = document.createElement('span');
+                        s.textContent = ch;
+                        s.style.fontWeight = Math.round(800 - (500 * i) / Math.max(total - 1, 1));
+                        s.setAttribute('aria-hidden', 'true');
+                        frag.appendChild(s);
+                        i++;
+                    }
+                    return frag;
+                };
+                if (animate) {
+                    const mask = document.createElement('span');
+                    mask.className = 'mask';
+                    const rise = document.createElement('span');
+                    rise.className = 'rise';
+                    rise.style.setProperty('--row', row);
+                    rise.appendChild(build());
+                    mask.appendChild(rise);
+                    el.appendChild(mask);
+                } else {
+                    el.appendChild(build());
+                }
+            });
+        });
+
+        /* ---------- click-to-copy email ----------
+           The mailto: link only works if the visitor has a desktop mail client
+           registered, so the address doubles as a copy button. */
+        const copyEmail = document.getElementById('copyEmail');
+        const copyLabel = copyEmail.textContent;
+        let copyTimer;
+
+        copyEmail.addEventListener('click', async () => {
+            const addr = copyEmail.dataset.email;
+            try {
+                await navigator.clipboard.writeText(addr);
+            } catch {
+                const ta = document.createElement('textarea');
+                ta.value = addr;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); } catch {}
+                ta.remove();
+            }
+            copyEmail.textContent = 'copied to clipboard ✓';
+            copyEmail.classList.add('copied');
+            clearTimeout(copyTimer);
+            copyTimer = setTimeout(() => {
+                copyEmail.textContent = copyLabel;
+                copyEmail.classList.remove('copied');
+            }, 1600);
+        });
+
+        /* ---------- scroll reveal fallback (for browsers without animation-timeline) ----------
+           observeReveals() is re-run after the post list renders, since those
+           nodes don't exist yet at this point. */
+        let observeReveals = () => {};
+        if (!CSS.supports('animation-timeline: view()')) {
+            const io = new IntersectionObserver(entries => {
+                entries.forEach(en => {
+                    if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+                });
+            }, { rootMargin: '0px 0px -8% 0px' });
+            observeReveals = (scope = document) =>
+                scope.querySelectorAll('.reveal').forEach(el => io.observe(el));
+            observeReveals();
+        }
+
+        /* ---------- blog: manifest-driven ----------
+           posts/posts.json lists every post; each non-draft entry loads its body
+           from posts/<slug>.html on demand. Routes are #blog/<slug>. */
+        const postList = document.getElementById('postList');
+        const cache = new Map();
+        let manifest = [];
+
+        const fmtDate = iso => new Date(iso + 'T12:00:00').toLocaleDateString('en-US',
+            { year: 'numeric', month: 'long', day: 'numeric' });
+
+        function renderList() {
+            postList.innerHTML = '';
+            manifest.forEach(p => {
+                const el = document.createElement(p.draft ? 'div' : 'a');
+                el.className = 'post reveal';
+                if (!p.draft) { el.href = '#blog/' + p.slug; el.dataset.page = 'blog/' + p.slug; }
+                const meta = p.draft
+                    ? '<span class="badge">soon</span>'
+                    : `<time datetime="${p.date}">${fmtDate(p.date)}</time><span>·</span>` +
+                      `<span>${p.readTime || ''}</span>`;
+                el.innerHTML = `<div class="post-meta">${meta}</div>` +
+                    `<div class="post-title"></div><div class="post-excerpt"></div>`;
+                el.querySelector('.post-title').textContent = p.title;
+                el.querySelector('.post-excerpt').textContent = p.excerpt || '';
+                if (!p.draft) el.addEventListener('click', e => { e.preventDefault(); go(el.dataset.page); });
+                postList.appendChild(el);
+            });
+            observeReveals(postList);
+        }
+
+        async function loadPost(slug) {
+            const p = manifest.find(x => x.slug === slug && !x.draft);
+            if (!p) return false;
+
+            document.getElementById('postTitle').textContent = p.title;
+            document.getElementById('postDek').textContent = p.dek || '';
+            document.getElementById('postMeta').innerHTML =
+                `<time datetime="${p.date}">${fmtDate(p.date)}</time><span>·</span>` +
+                `<span>${p.readTime || ''}</span>` +
+                (p.category ? `<span>·</span><span>${p.category}</span>` : '');
+
+            const tags = document.getElementById('postTags');
+            tags.innerHTML = '';
+            (p.tags || []).forEach(t => {
+                const s = document.createElement('span');
+                s.className = 'tag';
+                s.textContent = t;
+                tags.appendChild(s);
+            });
+
+            const link = document.getElementById('postLink');
+            if (p.link) { link.href = p.link.href; link.textContent = p.link.label; link.hidden = false; }
+            else link.hidden = true;
+
+            const body = document.getElementById('postBody');
+            if (!cache.has(slug)) {
+                try {
+                    const res = await fetch(`posts/${slug}.html`, { cache: 'no-cache' });
+                    if (!res.ok) throw new Error(res.status);
+                    cache.set(slug, await res.text());
+                } catch (err) {
+                    cache.set(slug, '<p>Could not load this post. If you opened the page as a ' +
+                        '<code>file://</code> URL, serve it over HTTP instead — <code>python3 -m http.server</code>.</p>');
+                }
+            }
+            body.innerHTML = cache.get(slug);
+            return true;
+        }
+
+        /* ---------- routing ---------- */
+        const pages = document.querySelectorAll('.page');
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const navLinks = document.getElementById('navLinks');
+        const menuBtn = document.getElementById('menuBtn');
+        const VALID = ['about', 'experience', 'projects', 'blog'];
+
+        async function go(route, push = true) {
+            const slug = route.startsWith('blog/') ? route.slice(5) : null;
+            let id = slug ? 'post' : route;
+            if (slug && !(await loadPost(slug))) { route = 'blog'; id = 'blog'; }
+            if (!slug && !VALID.includes(id)) { route = 'about'; id = 'about'; }
+
+            const tab = slug ? 'blog' : id;
+            pages.forEach(p => p.classList.toggle('active', p.id === id));
+            navBtns.forEach(b => b.classList.toggle('active', b.dataset.page === tab));
+            navLinks.classList.remove('open');
+            menuBtn.setAttribute('aria-expanded', 'false');
+            document.body.toggleAttribute('data-reading', !!slug);
+            document.title = slug
+                ? document.getElementById('postTitle').textContent + ' — gokul elangovan'
+                : 'gokul elangovan';
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            if (push && location.hash.slice(1) !== route) history.pushState(null, '', '#' + route);
+        }
+
+        document.querySelectorAll('[data-page]').forEach(el => {
+            el.addEventListener('click', e => { e.preventDefault(); go(el.dataset.page); });
+        });
+
+        menuBtn.addEventListener('click', () => {
+            const open = navLinks.classList.toggle('open');
+            menuBtn.setAttribute('aria-expanded', String(open));
+        });
+
+        window.addEventListener('popstate', () => go(location.hash.slice(1) || 'about', false));
+
+        /* no-cache forces a revalidation request, so edits to the manifest
+           show up on an ordinary refresh instead of needing a hard reload. */
+        fetch('posts/posts.json', { cache: 'no-cache' })
+            .then(r => r.json())
+            .then(data => { manifest = data; renderList(); })
+            .catch(() => {
+                postList.innerHTML = '<p class="prose">Posts could not be loaded. Serve this page over ' +
+                    'HTTP (<code>python3 -m http.server</code>) rather than opening the file directly.</p>';
+            })
+            .finally(() => { if (location.hash) go(location.hash.slice(1), false); });
+
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+[
+  {
+    "slug": "moe-apple-silicon",
+    "title": "Building MoE Models on Apple Silicon",
+    "date": "2026-09-21",
+    "readTime": "9 min read",
+    "category": "ML Systems",
+    "tags": [
+      "Rust",
+      "MLX",
+      "PyTorch",
+      "MoE"
+    ],
+    "excerpt": "On tokenizer design, the PyTorch MPS vs MLX tradeoff, and whether expert specialization holds up on constrained hardware.",
+    "dek": "I spent a month trying to train a mixture-of-experts language model on a laptop. The interesting part wasn't the model — it was discovering how much of the standard training recipe assumes a datacenter.",
+    "link": {
+      "label": "View the repo ↗",
+      "href": "https://github.com/egokul71435/edge-moe"
+    },
+    "draft": true
+  },
+  {
+    "slug": "next-post",
+    "title": "Next post coming soon",
+    "draft": true,
+    "excerpt": "TBD"
+  }
+]
